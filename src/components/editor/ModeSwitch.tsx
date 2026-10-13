@@ -19,8 +19,8 @@ const INFO: Record<Mode, { title: string; flag: string; points: string[] }> = {
 };
 
 const TONE: Record<Mode, { on: string; text: string; dot: string; pill: string }> = {
-  v1: { on: 'border-v1 bg-v1/10 shadow-[0_0_0_4px] shadow-v1/10', text: 'text-v1-soft', dot: 'bg-v1 shadow-[0_0_0_3px] shadow-v1/20', pill: 'border-v1/50 text-v1-soft' },
-  v2: { on: 'border-v2 bg-v2/10 shadow-[0_0_0_4px] shadow-v2/10', text: 'text-v2-soft', dot: 'bg-v2 shadow-[0_0_0_3px] shadow-v2/20', pill: 'border-v2/50 text-v2-soft' },
+  v1: { on: 'border-[#4b5260] bg-panel-2', text: 'text-fg', dot: 'bg-v1', pill: 'border-line-2 text-muted' },
+  v2: { on: 'border-[#4b5260] bg-panel-2', text: 'text-fg', dot: 'bg-v2', pill: 'border-line-2 text-muted' },
 };
 
 function ModeCard({ m, mode }: { m: Message; mode: Mode }) {
@@ -32,10 +32,10 @@ function ModeCard({ m, mode }: { m: Message; mode: Mode }) {
     <button
       type="button"
       onClick={() => !on && update((d) => void (d.mode = mode))}
-      className={cn('rounded-xl border-2 bg-panel p-3 text-left transition', on ? tone.on : 'border-line opacity-70 hover:border-line-2 hover:opacity-100')}
+      className={cn('rounded-xl border bg-panel p-3 text-left transition', on ? tone.on : 'border-line opacity-60 hover:border-line-2 hover:opacity-100')}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className={cn('size-2.5 rounded-full', tone.dot)} />
+        <span className={cn('size-2 rounded-full', tone.dot)} />
         <b className={cn('text-[15px]', tone.text)}>{info.title}</b>
         <code className="rounded bg-panel-3 px-1.5 font-mono text-[10.5px] text-muted">{info.flag}</code>
         {!on && hasContent(m, mode) && <span className={cn('ml-auto rounded-full border px-2 text-[10.5px]', tone.pill)}>borrador</span>}
@@ -60,7 +60,7 @@ export function ModeSwitch({ message }: { message: Message }) {
       </div>
       <div className="flex items-center gap-3 px-0.5 text-[12.5px] text-muted">
         <span className="flex-1">
-          Cada mensaje guarda un borrador <b className="text-v1-soft">V1</b> y otro <b className="text-v2-soft">V2</b> por separado. Solo se envía el del modo activo.
+          Cada mensaje guarda un borrador <b className="text-fg">V1</b> y otro <b className="text-fg">V2</b> por separado. Solo se envía el del modo activo.
         </span>
         <Button size="sm" disabled={!hasContent(message, message.mode)} onClick={convertActive}>
           <ArrowRightLeft /> Convertir a {other.toUpperCase()}

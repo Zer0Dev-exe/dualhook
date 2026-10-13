@@ -31,7 +31,7 @@ export function Card({ id, title, icon, tag, summary, actions, children, classNa
         }}
       >
         {id && <ChevronDown className={cn('size-3.5 shrink-0 text-muted transition-transform', collapsed && '-rotate-90')} />}
-        {icon && <span className="flex shrink-0 text-mode [&_svg]:size-4">{icon}</span>}
+        {icon && <span className="flex shrink-0 text-muted [&_svg]:size-4">{icon}</span>}
         <span className="whitespace-nowrap font-semibold">{title}</span>
         {tag}
         {summary && <span className="min-w-0 truncate text-[12.5px] text-muted">{summary}</span>}
@@ -49,7 +49,7 @@ export function Tag({ children, className }: { children: ReactNode; className?: 
 
 export function ModePill({ mode, children, className }: { mode: 'v1' | 'v2'; children?: ReactNode; className?: string }) {
   return (
-    <span className={cn('inline-block rounded px-1.5 py-px text-[10.5px] font-extrabold tracking-wide', mode === 'v1' ? 'bg-v1 text-white' : 'bg-v2 text-[#062b16]', className)}>
+    <span className={cn('inline-block rounded px-1.5 py-px text-[10.5px] font-bold tracking-wide', mode === 'v1' ? 'bg-v1/15 text-v1-soft' : 'bg-v2/15 text-v2-soft', className)}>
       {children ?? mode.toUpperCase()}
     </span>
   );

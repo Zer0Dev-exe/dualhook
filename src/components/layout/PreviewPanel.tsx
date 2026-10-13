@@ -47,7 +47,7 @@ function JsonView() {
         </Button>
       </div>
       <textarea
-        className="min-h-0 flex-1 resize-none rounded-lg border border-dc-dark bg-dc-dark p-3 font-mono text-xs leading-relaxed text-dc-text outline-none focus:border-mode"
+        className="min-h-0 flex-1 resize-none rounded-lg border border-dc-dark bg-dc-dark p-3 font-mono text-xs leading-relaxed text-dc-text outline-none focus:border-[#4b5260]"
         spellCheck={false}
         value={text}
         onChange={(e) => {

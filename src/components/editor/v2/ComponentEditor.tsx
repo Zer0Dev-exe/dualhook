@@ -123,8 +123,6 @@ export function ComponentEditor<T extends AnyComp>({ items, index, onItemsChange
     return (
       <ActionRowEditor
         row={c}
-        className="border-l-[3px]"
-        style={{ borderLeftColor: meta.color }}
         onChange={replace}
         actions={<ItemActions items={items} index={index} onChange={onItemsChange} extra={extra} />}
       />
@@ -185,9 +183,7 @@ export function ComponentEditor<T extends AnyComp>({ items, index, onItemsChange
   return (
     <Card
       id={c._id}
-      className="border-l-[3px]"
-      style={{ borderLeftColor: c.type === 17 ? c.accent_color || '#333944' : meta.color }}
-      icon={<span style={{ color: meta.color }}>{meta.icon}</span>}
+      icon={meta.icon}
       title={meta.name}
       summary={summary}
       actions={<ItemActions items={items} index={index} onChange={onItemsChange} extra={extra} />}

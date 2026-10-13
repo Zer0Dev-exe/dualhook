@@ -55,14 +55,13 @@ function DiscordMessage({ m, index, active }: { m: Message; index: number; activ
       className={cn(
         'relative mb-2.5 grid cursor-pointer grid-cols-[40px_1fr] gap-x-3.5 rounded-lg border border-transparent px-4 pb-2.5 pt-6 hover:bg-dc-hover',
         active && 'bg-dc-hover',
-        active && (isV1 ? 'border-v1/40' : 'border-v2/40'),
+        active && 'border-white/10',
       )}
     >
       <span
         className={cn(
-          'absolute right-2.5 top-1 rounded border px-1.5 text-[10px] font-extrabold uppercase tracking-wider',
-          isV1 ? 'border-v1/50 text-v1-soft' : 'border-v2/50 text-v2-soft',
-          !active && 'opacity-50',
+          'absolute right-2.5 top-1.5 text-[10px] font-semibold uppercase tracking-wider text-dc-muted',
+          !active && 'opacity-60',
         )}
       >
         {isV1 ? 'V1 · Clásico' : 'V2 · Components'}

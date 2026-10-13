@@ -28,7 +28,7 @@
 
 @layer components {
   .input {
-    @apply w-full rounded-lg border border-line-2 bg-panel px-2.5 py-1.5 text-sm text-fg outline-none transition placeholder:text-muted/70 focus:border-mode focus:ring-2 focus:ring-mode/20;
+    @apply w-full rounded-lg border border-line-2 bg-panel px-2.5 py-1.5 text-sm text-fg outline-none transition placeholder:text-muted/70 focus:border-[#4b5260] focus:ring-2 focus:ring-white/5;
   }
   .autosize {
     field-sizing: content;

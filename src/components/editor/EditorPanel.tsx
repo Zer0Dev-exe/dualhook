@@ -23,9 +23,9 @@ export function EditorPanel() {
       <TargetCard />
       <ModeSwitch message={m} />
 
-      <section className="relative flex flex-col gap-2.5 rounded-2xl border-2 border-mode/40 bg-gradient-to-b from-mode/10 to-transparent to-[160px] p-2.5">
-        <div className="flex items-center gap-2 px-0.5 text-xs font-extrabold uppercase tracking-widest text-mode">
-          <span className={cn('size-2.5 rounded-full bg-mode shadow-[0_0_0_3px] shadow-mode/20')} />
+      <section className="flex flex-col gap-2.5">
+        <div className="flex items-center gap-2 px-0.5 pt-1 text-[11px] font-bold uppercase tracking-wider text-muted">
+          <span className={cn('size-1.5 rounded-full', isV1 ? 'bg-v1' : 'bg-v2')} />
           {isV1 ? 'Editando borrador V1 · Clásico' : 'Editando borrador V2 · Components'}
         </div>
         {isV1 ? <V1Editor message={m} /> : <V2Editor message={m} />}

@@ -17,7 +17,7 @@ export function V1Editor({ message }: { message: Message }) {
   const attachList = `att-${message.id}`;
   return (
     <>
-      <Card id={`v1-content-${message.id}`} className="border-mode/40" icon={<PenLine />} title="Contenido">
+      <Card id={`v1-content-${message.id}`} icon={<PenLine />} title="Contenido">
         <TextField
           multiline
           rows={4}
@@ -28,7 +28,7 @@ export function V1Editor({ message }: { message: Message }) {
         />
       </Card>
 
-      <Card id={`v1-embeds-${message.id}`} className="border-mode/40" icon={<PanelTop />} title="Embeds" tag={<Tag>{d.embeds.length}/{L.embeds}</Tag>}>
+      <Card id={`v1-embeds-${message.id}`} icon={<PanelTop />} title="Embeds" tag={<Tag>{d.embeds.length}/{L.embeds}</Tag>}>
         {d.embeds.length ? (
           d.embeds.map((e, i) => <EmbedEditor key={e._id} embeds={d.embeds} index={i} attachList={attachList} onChange={(embeds) => update((m) => void (m.v1.embeds = embeds))} />)
         ) : (
@@ -37,7 +37,7 @@ export function V1Editor({ message }: { message: Message }) {
         <AddButtons options={[{ label: 'Embed', disabled: d.embeds.length >= L.embeds, onClick: () => update((m) => void m.v1.embeds.push(make.embed())) }]} />
       </Card>
 
-      <Card id={`v1-rows-${message.id}`} className="border-mode/40" icon={<RectangleHorizontal />} title="Botones" tag={<Tag>{d.components.length}/{L.rows} filas</Tag>}>
+      <Card id={`v1-rows-${message.id}`} icon={<RectangleHorizontal />} title="Botones" tag={<Tag>{d.components.length}/{L.rows} filas</Tag>}>
         <p className="text-xs text-muted">En webhooks normales solo se admiten botones de enlace. Se envía con <code>?with_components=true</code> automáticamente.</p>
         {d.components.map((r, i) => (
           <ActionRowEditor

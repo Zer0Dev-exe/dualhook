@@ -136,7 +136,7 @@ export function BackupsSheet({ open, onOpenChange, onExport }: { open: boolean; 
       onOpenChange={onOpenChange}
       title={
         <>
-          <Database className="size-5 text-mode" /> Backups
+          <Database className="size-5 text-muted" /> Backups
         </>
       }
       headerExtra={<span className="text-xs text-muted">{list.length} guardados · {fmtSize(size)}</span>}
@@ -179,9 +179,9 @@ export function BackupsSheet({ open, onOpenChange, onExport }: { open: boolean; 
           {(
             [
               ['all', 'Cualquier modo', 'bg-panel-3 text-fg'],
-              ['v1', 'Solo V1', 'bg-v1 text-white'],
-              ['v2', 'Solo V2', 'bg-v2 text-[#052513]'],
-              ['mixed', 'Mixto', 'bg-gradient-to-r from-v1 to-v2 text-white'],
+              ['v1', 'Solo V1', 'bg-panel-3 text-fg'],
+              ['v2', 'Solo V2', 'bg-panel-3 text-fg'],
+              ['mixed', 'Mixto', 'bg-panel-3 text-fg'],
             ] as const
           ).map(([v, l, on]) => (
             <button key={v} type="button" onClick={() => setMode(v)} className={cn('rounded-md px-2.5 py-1 text-xs text-muted hover:text-fg', mode === v && on)}>

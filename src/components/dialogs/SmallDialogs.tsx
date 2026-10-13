@@ -100,7 +100,7 @@ export function TemplatesDialog({ open, onOpenChange }: DialogProps) {
             key={t.name}
             type="button"
             onClick={async () => (await applyTemplate(t)) && onOpenChange(false)}
-            className={cn('rounded-xl border bg-panel-2 p-3 text-left transition', mode === 'v1' ? 'border-v1/40 hover:bg-v1/10' : 'border-v2/40 hover:bg-v2/10')}
+            className={cn('rounded-xl border bg-panel-2 p-3 text-left transition', 'border-line hover:border-line-2 hover:bg-panel-3')}
           >
             <div className="font-semibold">{t.name}</div>
             <div className="text-xs text-muted">{t.description}</div>

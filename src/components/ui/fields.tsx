@@ -62,7 +62,7 @@ export function TextField({ label, value, onChange, placeholder, max, multiline,
 export function CheckField({ label, checked, onChange, className }: { label: ReactNode; checked: boolean; onChange: (v: boolean) => void; className?: string }) {
   return (
     <label className={cn('inline-flex cursor-pointer select-none items-center gap-2 text-[13px]', className)}>
-      <input type="checkbox" className="size-4 accent-mode" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className="size-4 accent-[#8f96a3]" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       <span>{label}</span>
     </label>
   );

@@ -26,7 +26,7 @@ function MessageTabs() {
             className={cn(
               'group flex shrink-0 items-center gap-1.5 rounded-lg border border-line bg-panel-2 px-2.5 py-1 text-muted transition hover:text-fg',
               on && 'bg-panel-3 text-fg',
-              on && (isV1 ? 'border-v1 shadow-[inset_0_-2px] shadow-v1' : 'border-v2 shadow-[inset_0_-2px] shadow-v2'),
+              on && 'border-line-2',
             )}
           >
             <ModePill mode={m.mode} className="text-[10px]" />
@@ -44,10 +44,10 @@ function MessageTabs() {
           </button>
         );
       })}
-      <button type="button" disabled={full} onClick={() => addMessage('v1')} className="flex shrink-0 items-center gap-0.5 rounded-lg border border-dashed border-v1/50 px-2 text-xs font-bold text-v1-soft hover:bg-v1/10 disabled:opacity-40">
+      <button type="button" disabled={full} onClick={() => addMessage('v1')} className="flex shrink-0 items-center gap-0.5 rounded-lg border border-dashed border-line-2 px-2 text-xs font-semibold text-muted hover:text-fg disabled:opacity-40">
         <Plus className="size-3" /> V1
       </button>
-      <button type="button" disabled={full} onClick={() => addMessage('v2')} className="flex shrink-0 items-center gap-0.5 rounded-lg border border-dashed border-v2/50 px-2 text-xs font-bold text-v2-soft hover:bg-v2/10 disabled:opacity-40">
+      <button type="button" disabled={full} onClick={() => addMessage('v2')} className="flex shrink-0 items-center gap-0.5 rounded-lg border border-dashed border-line-2 px-2 text-xs font-semibold text-muted hover:text-fg disabled:opacity-40">
         <Plus className="size-3" /> V2
       </button>
     </nav>

@@ -3,6 +3,14 @@
 Todos los cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el versionado [SemVer](https://semver.org/lang/es/).
 
+## [1.0.1] — 2026-10-13
+
+### Cambiado
+
+- Interfaz más sobria: el azul (V1) y el verde (V2) quedan solo como detalle en las etiquetas de modo,
+  el punto de la tarjeta de modo y el botón de enviar. Bordes, iconos, botones y foco pasan a gris neutro.
+- Los tipos de componente V2 ya no tienen cada uno su color en el editor.
+
 ## [1.0.0] — 2026-10-13
 
 Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nombre **Dualhook**.
@@ -34,5 +42,6 @@ Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nomb
 
 - Prototipo inicial en HTML/CSS/JS sin framework, con el nombre provisional «Hookforge» (sustituido por la 1.0.0).
 
+[1.0.1]: #101--2026-10-13
 [1.0.0]: #100--2026-10-13
 [0.1.0]: #010--2026-10-13

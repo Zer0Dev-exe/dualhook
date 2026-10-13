@@ -11,7 +11,7 @@ import { ComponentEditor, rootAddOptions } from './ComponentEditor';
 
 function Meter({ label, value, max }: { label: string; value: number; max: number }) {
   const pct = Math.min(100, (value / max) * 100);
-  const tone = value > max ? 'bg-red-500' : value > max * 0.9 ? 'bg-amber-400' : 'bg-mode';
+  const tone = value > max ? 'bg-red-500' : value > max * 0.9 ? 'bg-amber-400' : 'bg-muted/50';
   return (
     <div className="relative overflow-hidden rounded-lg border border-line bg-panel px-3 pb-2.5 pt-1.5 text-[12.5px] text-muted">
       <div className="flex justify-between">
@@ -36,7 +36,7 @@ export function V2Editor({ message }: { message: Message }) {
         <Meter label="Componentes" value={st.count} max={LIMITS.v2.components} />
         <Meter label="Caracteres de texto" value={st.chars} max={LIMITS.v2.textTotal} />
       </div>
-      <Card className="border-mode/40" icon={<Boxes />} title="Componentes" tag={<Tag>{comps.length} en raíz</Tag>}>
+      <Card icon={<Boxes />} title="Componentes" tag={<Tag>{comps.length} en raíz</Tag>}>
         {comps.length ? (
           <div className="flex flex-col gap-2">
             {comps.map((c, i) => (
