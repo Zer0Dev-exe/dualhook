@@ -6,7 +6,12 @@
 
 **Editor visual de webhooks de Discord, con V1 (embeds) y V2 (Components V2) bien separados y backups de todo.**
 
-[![Versión](https://img.shields.io/badge/versión-1.0.0-2dc770?style=flat-square)](CHANGELOG.md)
+**[🚀 Abrir Dualhook](https://zer0.is-a.dev/dualhook/)** · [Guía de uso](#guía-de-uso) · [Changelog](CHANGELOG.md)
+
+[![Demo](https://img.shields.io/badge/demo-zer0.is--a.dev%2Fdualhook-2dc770?style=flat-square&logo=githubpages&logoColor=white)](https://zer0.is-a.dev/dualhook/)
+[![Deploy](https://img.shields.io/github/actions/workflow/status/Zer0Dev-exe/dualhook/deploy.yml?branch=main&style=flat-square&label=deploy)](https://github.com/Zer0Dev-exe/dualhook/actions/workflows/deploy.yml)
+[![Versión](https://img.shields.io/badge/versión-1.0.0-5865f2?style=flat-square)](CHANGELOG.md)
+[![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-yellow?style=flat-square)](LICENSE)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
@@ -30,8 +35,10 @@
 - [Privacidad](#privacidad)
 - [Stack y versiones](#stack-y-versiones)
 - [Estructura del proyecto](#estructura-del-proyecto)
+- [Despliegue](#despliegue)
 - [Hoja de ruta](#hoja-de-ruta)
 - [Changelog](#changelog)
+- [Licencia](#licencia)
 
 ## ¿Qué es?
 
@@ -107,12 +114,18 @@ admite Discord:
 
 ## Empezar
 
-### Requisitos
+### Online
+
+No hace falta instalar nada: **[zer0.is-a.dev/dualhook](https://zer0.is-a.dev/dualhook/)**.
+
+### En local
+
+#### Requisitos
 
 - [Node.js](https://nodejs.org) **18 o superior** (probado con Node 24 y npm 11)
 - Un navegador moderno (Chrome, Edge, Firefox o Safari recientes)
 
-### Instalación
+#### Instalación
 
 ```bash
 git clone https://github.com/Zer0Dev-exe/dualhook.git
@@ -120,7 +133,7 @@ cd dualhook
 npm install
 ```
 
-### Scripts
+#### Scripts
 
 | Comando | Qué hace |
 |---|---|
@@ -129,7 +142,7 @@ npm install
 | `npm run preview` | Sirve la build de producción para probarla |
 | `npm run typecheck` | Solo comprueba los tipos de TypeScript |
 
-### Usarlo sin servidor
+#### Usarlo sin servidor
 
 `npm run build` genera **un único archivo**, `dist/index.html`, con todo incluido (JS, CSS y fuentes).
 Puedes abrirlo con doble clic o subirlo a cualquier hosting estático (GitHub Pages, Netlify, Vercel…).
@@ -255,6 +268,12 @@ src/
     └── dialogs/          Backups, exportar, compartir, plantillas
 ```
 
+## Despliegue
+
+Cada `push` a `main` lanza el workflow [`deploy.yml`](.github/workflows/deploy.yml), que compila la app
+y la publica en **GitHub Pages**. Como la build es un único `index.html` sin rutas absolutas, se puede
+servir desde cualquier subcarpeta o hosting estático sin cambiar nada.
+
 ## Hoja de ruta
 
 Ideas para próximas versiones:
@@ -268,6 +287,10 @@ Ideas para próximas versiones:
 ## Changelog
 
 El historial de versiones está en [CHANGELOG.md](CHANGELOG.md).
+
+## Licencia
+
+[MIT](LICENSE) © 2026 Zer0Dev-exe
 
 <div align="center">
 <sub>Dualhook no está afiliado a Discord Inc. ni a Discohook.</sub>

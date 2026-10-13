@@ -35,5 +35,12 @@
     "typescript": "^5.9.3",
     "vite": "^5.4.21",
     "vite-plugin-singlefile": "^2.3.3"
+  },
+  "license": "MIT",
+  "author": "Zer0Dev-exe",
+  "homepage": "https://zer0.is-a.dev/dualhook/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zer0Dev-exe/dualhook.git"
   }
 }

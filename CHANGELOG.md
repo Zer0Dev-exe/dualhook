@@ -27,6 +27,7 @@ Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nomb
 - Atajos `Ctrl+S` (backup) y `Ctrl+Enter` (enviar).
 - Build en un único `index.html` que funciona sin servidor.
 - Logo propio: dos ganchos entrelazados, azul (V1) y verde (V2).
+- Licencia MIT y despliegue automático en GitHub Pages (https://zer0.is-a.dev/dualhook/).
 - Migración automática de los datos guardados con el nombre anterior («Hookforge»).
 
 ## [0.1.0] — 2026-10-13
