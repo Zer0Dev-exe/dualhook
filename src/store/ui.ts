@@ -3,12 +3,8 @@ import { persist } from 'zustand/middleware';
 
 interface UiState {
   view: 'preview' | 'json';
-  autoBackupMinutes: number;
-  lastAutoBackup: number;
   collapsed: Record<string, true>;
   setView: (v: UiState['view']) => void;
-  setAutoBackup: (min: number) => void;
-  markAutoBackup: () => void;
   toggleCollapsed: (id: string) => void;
 }
 
@@ -17,12 +13,8 @@ export const useUi = create<UiState>()(
   persist(
     (set) => ({
       view: 'preview',
-      autoBackupMinutes: 5,
-      lastAutoBackup: 0,
       collapsed: {},
       setView: (view) => set({ view }),
-      setAutoBackup: (autoBackupMinutes) => set({ autoBackupMinutes }),
-      markAutoBackup: () => set({ lastAutoBackup: Date.now() }),
       toggleCollapsed: (id) =>
         set((s) => {
           const collapsed = { ...s.collapsed };

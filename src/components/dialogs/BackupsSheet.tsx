@@ -1,24 +1,17 @@
-import { Copy, Database, Download, Pencil, Pin, Plus, Search, Trash2, Upload } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Copy, Database, Download, Link2, Pencil, Plus, Search, Trash2, Upload } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button, IconButton } from '@/components/ui/button';
 import { ModePill } from '@/components/ui/card';
 import { Sheet } from '@/components/ui/dialog';
-import { Empty, Segmented, SelectField } from '@/components/ui/fields';
-import type { Backup, BackupKind, Message } from '@/lib/types';
+import { Empty } from '@/components/ui/fields';
+import type { Backup, Message } from '@/lib/types';
 import { cn, download, fmtDate, fmtSize, slug } from '@/lib/utils';
 import { importFromFile, restoreBackup } from '@/store/actions';
 import { modesOf, useBackups } from '@/store/backups';
 import { confirmDialog, promptDialog } from '@/store/dialogs';
-import { useUi } from '@/store/ui';
 import { useWorkspace } from '@/store/workspace';
 
-const KIND: Record<BackupKind, { label: string; cls: string }> = {
-  manual: { label: 'Manual', cls: 'bg-slate-600/60 text-slate-100' },
-  auto: { label: 'Auto', cls: 'bg-panel-3 text-muted' },
-  sent: { label: 'Enviado', cls: 'bg-emerald-500/20 text-emerald-300' },
-  import: { label: 'Importado', cls: 'bg-amber-400/20 text-amber-200' },
-};
 
 type ModeFilter = 'all' | 'v1' | 'v2' | 'mixed';
 
@@ -33,7 +26,7 @@ export async function saveManualBackup() {
   const first = useWorkspace.getState().messages[0];
   const name = await promptDialog('Guardar backup', `${first?.username || 'Backup'} · ${fmtDate(Date.now())}`, 'Nombre');
   if (name === null) return;
-  useBackups.getState().create('manual', name || undefined);
+  useBackups.getState().create(name || undefined);
   toast.success('Backup guardado');
 }
 
@@ -42,9 +35,9 @@ function BackupItem({ b }: { b: Backup }) {
   const mc = modesOf(b.messages);
   const text = snippet(b.messages[0]);
   return (
-    <div className={cn('flex flex-col gap-1.5 rounded-xl border border-line bg-panel-2 p-3 transition hover:border-line-2', b.kind === 'auto' && 'opacity-85')}>
+    <div className="flex flex-col gap-1.5 rounded-xl border border-line bg-panel-2 p-3 hover:border-line-2">
       <div className="flex items-center gap-2">
-        <span className={cn('shrink-0 rounded px-1.5 py-px text-[10.5px] font-extrabold uppercase tracking-wide', KIND[b.kind].cls)}>{KIND[b.kind].label}</span>
+        {b.kind === 'import' && <span className="shrink-0 rounded bg-panel-3 px-1.5 py-px text-[10.5px] font-bold uppercase tracking-wide text-muted">Importado</span>}
         <b className="min-w-0 truncate" title={b.name}>
           {b.name}
         </b>
@@ -53,7 +46,7 @@ function BackupItem({ b }: { b: Backup }) {
         {mc.v2 > 0 && <ModePill mode="v2">V2 ×{mc.v2}</ModePill>}
       </div>
       <div className="text-xs text-muted">
-        {fmtDate(b.updatedAt || b.createdAt)} · {b.messages.length} mensaje(s){b.sentTo ? ` · → ${b.sentTo}` : ''}
+        {fmtDate(b.updatedAt || b.createdAt)} · {b.messages.length} mensaje(s)
       </div>
       {text && <div className="truncate rounded-md bg-panel px-2 py-1 text-[12.5px] text-[#b5bac1]">{text.slice(0, 160)}</div>}
       <div className="flex flex-wrap items-center gap-1">
@@ -83,15 +76,9 @@ function BackupItem({ b }: { b: Backup }) {
         >
           <Pencil />
         </IconButton>
-        {b.kind === 'manual' ? (
-          <IconButton title="Duplicar" onClick={() => create('manual', `${b.name} (copia)`, b.messages)}>
-            <Copy />
-          </IconButton>
-        ) : (
-          <IconButton title="Conservar como manual (no se borra automáticamente)" onClick={() => update(b.id, { kind: 'manual', pinned: true })}>
-            <Pin />
-          </IconButton>
-        )}
+        <IconButton title="Duplicar" onClick={() => create(`${b.name} (copia)`, b.messages)}>
+          <Copy />
+        </IconButton>
         <IconButton title="Descargar JSON" onClick={() => download(`dualhook-${slug(b.name)}.json`, JSON.stringify({ app: 'dualhook', version: 1, backups: [b] }, null, 2))}>
           <Download />
         </IconButton>
@@ -109,19 +96,10 @@ function BackupItem({ b }: { b: Backup }) {
 
 export function BackupsSheet({ open, onOpenChange, onExport }: { open: boolean; onOpenChange: (v: boolean) => void; onExport: () => void }) {
   const list = useBackups((s) => s.list);
-  const { autoBackupMinutes, setAutoBackup } = useUi();
-  const [kind, setKind] = useState<'all' | BackupKind>('all');
   const [mode, setMode] = useState<ModeFilter>('all');
   const [q, setQ] = useState('');
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { all: list.length };
-    list.forEach((b) => (c[b.kind] = (c[b.kind] ?? 0) + 1));
-    return c;
-  }, [list]);
-
   const shown = list.filter((b) => {
-    if (kind !== 'all' && b.kind !== kind) return false;
     const mc = modesOf(b.messages);
     if (mode === 'v1' && (!mc.v1 || mc.v2)) return false;
     if (mode === 'v2' && (!mc.v2 || mc.v1)) return false;
@@ -153,28 +131,15 @@ export function BackupsSheet({ open, onOpenChange, onExport }: { open: boolean; 
         </Button>
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <span className="label">Backup automático</span>
-        <SelectField
-          className="w-40"
-          value={autoBackupMinutes}
-          onChange={setAutoBackup}
-          options={[[0, 'Desactivado'], [1, 'Cada minuto'], [5, 'Cada 5 min'], [15, 'Cada 15 min'], [30, 'Cada 30 min']] as const}
-        />
+      <div className="flex gap-2 rounded-lg border border-line bg-panel-2 p-2.5 text-[12.5px] text-muted">
+        <Link2 className="mt-0.5 size-4 shrink-0" />
+        <span>
+          Los backups solo se guardan cuando tú quieras. Mientras tanto, <b className="text-fg">el enlace de la página se actualiza solo</b> con
+          tus mensajes: si cierras la pestaña sin guardar, abre ese enlace (está en el historial del navegador) y lo recuperas.
+        </span>
       </div>
 
       <div className="flex flex-col gap-2">
-        <Segmented
-          value={kind}
-          onChange={setKind}
-          options={[
-            ['all', `Todos ${counts.all ?? 0}`],
-            ['manual', `Manual ${counts.manual ?? 0}`],
-            ['auto', `Auto ${counts.auto ?? 0}`],
-            ['sent', `Enviados ${counts.sent ?? 0}`],
-            ['import', `Import. ${counts.import ?? 0}`],
-          ]}
-        />
         <div className="inline-flex w-fit gap-0.5 rounded-lg border border-line-2 bg-panel p-0.5">
           {(
             [
@@ -195,7 +160,7 @@ export function BackupsSheet({ open, onOpenChange, onExport }: { open: boolean; 
         </label>
       </div>
 
-      <div className="flex flex-col gap-2">{shown.length ? shown.map((b) => <BackupItem key={b.id} b={b} />) : <Empty>No hay backups con este filtro.</Empty>}</div>
+      <div className="flex flex-col gap-2">{shown.length ? shown.map((b) => <BackupItem key={b.id} b={b} />) : <Empty>{list.length ? "No hay backups con este filtro." : "Aún no hay backups. Pulsa «Guardar backup ahora» cuando quieras guardar una copia."}</Empty>}</div>
     </Sheet>
   );
 }

@@ -6,23 +6,8 @@ import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/layout/PreviewPanel';
 import { SendBar } from '@/components/layout/SendBar';
 import { TopBar, type DialogName } from '@/components/layout/TopBar';
-import { openShareHash } from '@/store/actions';
-import { useBackups } from '@/store/backups';
-import { useUi } from '@/store/ui';
+import { startUrlSync } from '@/store/actions';
 import { useActiveMessage } from '@/store/workspace';
-
-/** Backups automáticos cada N minutos (si hubo cambios desde el último). */
-function useAutoBackup() {
-  useEffect(() => {
-    const id = setInterval(() => {
-      const ui = useUi.getState();
-      if (!ui.autoBackupMinutes || Date.now() - ui.lastAutoBackup < ui.autoBackupMinutes * 60_000) return;
-      ui.markAutoBackup();
-      useBackups.getState().autoIfChanged();
-    }, 30_000);
-    return () => clearInterval(id);
-  }, []);
-}
 
 function useShortcuts() {
   useEffect(() => {
@@ -50,8 +35,16 @@ export default function App() {
   useEffect(() => {
     document.documentElement.dataset.mode = mode;
   }, [mode]);
-  useEffect(() => void openShareHash(), []);
-  useAutoBackup();
+  // El enlace de la página guarda el contenido: si se sale sin guardar backup, no se pierde
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+    startUrlSync().then((u) => (cancelled ? u() : (unsubscribe = u)));
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, []);
   useShortcuts();
 
   const openDialog = (d: DialogName | null) => {

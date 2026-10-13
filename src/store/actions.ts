@@ -1,13 +1,14 @@
 /* Operaciones que combinan varios stores. Los componentes llaman a estas funciones. */
 import { toast } from 'sonner';
 import { discord, parseMessageId } from '@/lib/discord';
-import { normalizeMessage } from '@/lib/factory';
+import { normalizeMessage, welcomeMessage } from '@/lib/factory';
 import { convertV1toV2, convertV2toV1, importAny, parseApiMessage } from '@/lib/payload';
 import type { Template } from '@/lib/templates';
 import type { Backup, Message, Mode } from '@/lib/types';
+import { decodeMessages, encodeMessages, linkFor, readHashData, writeHashData } from '@/lib/urlState';
 import { b64decode, b64encode, clone, pickFiles, withNewIds } from '@/lib/utils';
 import { validate } from '@/lib/validation';
-import { useBackups } from './backups';
+import { fingerprint, useBackups } from './backups';
 import { confirmDialog } from './dialogs';
 import { getActiveTarget, useTargets } from './targets';
 import { getMessageFiles, useFiles } from './ui';
@@ -25,7 +26,6 @@ export async function convertActive() {
   const m = getActiveMessage();
   const other: Mode = m.mode === 'v1' ? 'v2' : 'v1';
   if (hasContent(m, other) && !(await confirmDialog(`El borrador ${other.toUpperCase()} de este mensaje ya tiene contenido y se sustituirá.`, { ok: 'Convertir' }))) return;
-  backups().autoIfChanged('Antes de convertir');
   if (m.mode === 'v1') {
     const comps = convertV1toV2(m);
     ws().updateActive((d) => {
@@ -45,7 +45,6 @@ export async function convertActive() {
 export async function applyTemplate(t: Template) {
   const m = getActiveMessage();
   if (hasContent(m, t.mode) && !(await confirmDialog(`Se sustituirá el borrador ${t.mode.toUpperCase()} del mensaje actual.`, { ok: 'Usar plantilla' }))) return false;
-  backups().autoIfChanged('Antes de aplicar plantilla');
   ws().updateActive((d) => {
     if (t.mode === 'v2') d.v2.components = t.build();
     else d.v1 = t.build();
@@ -56,7 +55,6 @@ export async function applyTemplate(t: Template) {
 
 export function applyJson(text: string) {
   const parsed = parseApiMessage(JSON.parse(text));
-  backups().autoIfChanged('Antes de aplicar JSON');
   ws().updateActive((d) => {
     d.mode = parsed.mode;
     if (parsed.mode === 'v1') d.v1 = parsed.v1;
@@ -72,7 +70,6 @@ export function applyJson(text: string) {
 
 export async function removeMessage(i: number) {
   if (!(await confirmDialog(`¿Eliminar el mensaje ${i + 1} del espacio de trabajo?`, { ok: 'Eliminar', danger: true }))) return;
-  backups().autoIfChanged(`Antes de eliminar mensaje ${i + 1}`);
   ws().removeMessage(i);
 }
 
@@ -90,8 +87,6 @@ export async function sendMessage(index: number): Promise<{ ok: true } | { ok: f
     ws().updateMessage(index, (d) => {
       d.lastSent = { messageId, channelId: res?.channel_id, at: Date.now(), mode: m.mode, edited: editing };
     });
-    const where = t.name || t.info?.name || 'webhook';
-    backups().create('sent', `${editing ? 'Editado' : 'Enviado'} · ${m.mode.toUpperCase()} · ${where}`, [ws().messages[index]], { sentTo: where, messageId });
     return { ok: true };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
@@ -103,7 +98,6 @@ export async function loadFromDiscord() {
   const t = getActiveTarget();
   if ((hasContent(m, 'v1') || hasContent(m, 'v2')) && !(await confirmDialog('Cargar el mensaje sustituirá el borrador del modo que tenga ese mensaje.', { ok: 'Cargar' }))) return;
   const api = await discord.fetchMessage(t.url, m.editMessageId, m.thread_id);
-  backups().autoIfChanged('Antes de cargar mensaje');
   const parsed = parseApiMessage(api);
   ws().updateActive((d) => {
     d.mode = parsed.mode;
@@ -128,7 +122,6 @@ export async function deleteFromDiscord() {
 export async function restoreBackup(b: Backup, mode: 'replace' | 'append') {
   if (mode === 'replace') {
     if (!(await confirmDialog(`Se sustituirá el espacio de trabajo por «${b.name}».\nAntes se guardará un backup automático de lo actual.`, { ok: 'Restaurar' }))) return;
-    backups().autoIfChanged(`Antes de restaurar «${b.name}»`);
     useFiles.getState().clear();
     ws().replaceAll(clone(b.messages));
     toast.success('Backup restaurado');
@@ -171,13 +164,12 @@ export async function importFromFile() {
     if (fresh.length) parts.push(`${fresh.length} webhook(s)`);
   }
   if (data.messages?.length) {
-    if (await confirmDialog(`El archivo contiene ${data.messages.length} mensaje(s). ¿Sustituir el espacio de trabajo? (se guarda backup antes)`, { ok: 'Sustituir' })) {
-      backups().autoIfChanged('Antes de importar');
+    if (await confirmDialog(`El archivo contiene ${data.messages.length} mensaje(s). ¿Sustituir el espacio de trabajo? (guarda antes un backup si quieres conservar lo actual)`, { ok: 'Sustituir' })) {
       useFiles.getState().clear();
       ws().replaceAll(data.messages);
       parts.push(`${data.messages.length} mensaje(s)`);
     } else {
-      backups().create('import', `Importado · ${file.name}`, data.messages);
+      backups().create(`Importado · ${file.name}`, data.messages, 'import');
       parts.push('mensajes guardados como backup');
     }
   }
@@ -185,25 +177,47 @@ export async function importFromFile() {
   else toast('Nada que importar');
 }
 
-/* ---------- compartir ---------- */
-export function shareUrl() {
-  const data = { app: 'dualhook', version: 1, messages: ws().messages };
-  return { url: `${location.href.split('#')[0]}#share=${b64encode(JSON.stringify(data))}`, json: JSON.stringify(data, null, 2) };
+/* ---------- enlace con el contenido (#data=…) ---------- */
+/** Mantiene el enlace de la página actualizado con los mensajes, para no perder nada al salir. */
+export async function startUrlSync() {
+  // 1) Si se abre un enlace con contenido, cargarlo
+  const data = readHashData() ?? legacyShareData();
+  if (data) {
+    try {
+      const fromLink = await decodeMessages(data);
+      const current = ws().messages;
+      const same = fingerprint(fromLink) === fingerprint(current);
+      const pristine = fingerprint(current) === fingerprint([welcomeMessage()]);
+      if (!same && (pristine || (await confirmDialog(`Este enlace contiene ${fromLink.length} mensaje(s). ¿Cargarlos? Sustituyen lo que tienes ahora en el editor.`, { ok: 'Cargar' })))) {
+        useFiles.getState().clear();
+        ws().replaceAll(fromLink);
+      }
+    } catch {
+      toast.error('El enlace no contiene datos válidos');
+    }
+  }
+  // 2) A partir de aquí, cada cambio se refleja en el enlace
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const sync = () => {
+    clearTimeout(timer);
+    timer = setTimeout(async () => writeHashData(await encodeMessages(ws().messages)), 400);
+  };
+  sync();
+  return useWorkspace.subscribe((s, prev) => s.messages !== prev.messages && sync());
 }
 
-export async function openShareHash() {
+/** Enlaces antiguos «#share=<base64 json>» de versiones anteriores. */
+function legacyShareData() {
   const m = location.hash.match(/^#share=([\w-]+)/);
-  if (!m) return;
-  history.replaceState(null, '', location.pathname + location.search);
+  if (!m) return null;
   try {
     const data = importAny(JSON.parse(b64decode(m[1])));
-    if (!data.messages?.length) return;
-    if (await confirmDialog(`Este enlace contiene ${data.messages.length} mensaje(s). ¿Cargarlos? (lo actual se guarda como backup)`, { ok: 'Cargar' })) {
-      backups().autoIfChanged('Antes de abrir enlace compartido');
-      useFiles.getState().clear();
-      ws().replaceAll(data.messages);
-    }
+    return data.messages ? `j${b64encode(JSON.stringify({ messages: data.messages }))}` : null;
   } catch {
-    toast.error('Enlace compartido no válido');
+    return null;
   }
+}
+
+export async function currentLink() {
+  return linkFor(await encodeMessages(ws().messages));
 }

@@ -3,6 +3,22 @@
 Todos los cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el versionado [SemVer](https://semver.org/lang/es/).
 
+## [1.1.0] — 2026-10-13
+
+### Añadido
+
+- **El enlace de la página guarda el trabajo**: la URL se actualiza con cada cambio (`#data=…`,
+  comprimido con deflate). Si se cierra la pestaña sin guardar, el enlace del historial recupera los
+  mensajes. Al abrir un enlace con contenido distinto al del editor se pide confirmación.
+- El botón *Compartir* usa ese mismo enlace. Los enlaces antiguos `#share=` siguen funcionando.
+
+### Cambiado
+
+- **Los backups son solo manuales.** Se eliminan los backups automáticos (por intervalo y antes de
+  restaurar, importar, convertir, etc.) y los que se creaban al enviar. Los que ya existían de esos
+  tipos se borran; los manuales y los importados se conservan.
+- El panel de backups pierde el selector de intervalo y las pestañas por tipo; queda el filtro por modo.
+
 ## [1.0.3] — 2026-10-13
 
 ### Cambiado
@@ -51,7 +67,7 @@ Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nomb
 - Validación en vivo con los límites de Discord, separada por modo.
 - Envío, edición y borrado de mensajes; hilos y posts de foro; mensajes silenciosos; archivos adjuntos.
 - Webhooks guardados con comprobación (nombre, avatar, canal y si es de aplicación).
-- Backups manuales, automáticos, de envío e importados, con filtros por tipo y por modo.
+- Backups manuales, automáticos, de envío e importados, con filtros por tipo y por modo (en 1.1.0 pasan a ser solo manuales).
 - Importar/exportar JSON (incluye backups de Discohook y payloads sueltos) y enlaces para compartir.
 - Plantillas V1 y V2.
 - Atajos `Ctrl+S` (backup) y `Ctrl+Enter` (enviar).
@@ -64,6 +80,7 @@ Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nomb
 
 - Prototipo inicial en HTML/CSS/JS sin framework, con el nombre provisional «Hookforge» (sustituido por la 1.0.0).
 
+[1.1.0]: #110--2026-10-13
 [1.0.3]: #103--2026-10-13
 [1.0.2]: #102--2026-10-13
 [1.0.1]: #101--2026-10-13

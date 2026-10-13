@@ -7,7 +7,7 @@ import { CheckField } from '@/components/ui/fields';
 import { templatesFor } from '@/lib/templates';
 import type { Mode } from '@/lib/types';
 import { cn, download } from '@/lib/utils';
-import { applyTemplate, exportBundle, shareUrl } from '@/store/actions';
+import { applyTemplate, currentLink, exportBundle } from '@/store/actions';
 import { useBackups } from '@/store/backups';
 import { useDialogStore } from '@/store/dialogs';
 import { useWorkspace } from '@/store/workspace';
@@ -64,7 +64,7 @@ export function ExportDialog({ open, onOpenChange, includeBackups }: DialogProps
 export function ShareDialog({ open, onOpenChange }: DialogProps) {
   const [data, setData] = useState({ url: '', json: '' });
   useEffect(() => {
-    if (open) setData(shareUrl());
+    if (open) currentLink().then((url) => setData({ url, json: JSON.stringify(exportBundle({ workspace: true, backups: false, targets: false }), null, 2) }));
   }, [open]);
   const copy = (text: string, msg: string) => navigator.clipboard.writeText(text).then(() => toast.success(msg));
   return (
@@ -72,7 +72,7 @@ export function ShareDialog({ open, onOpenChange }: DialogProps) {
       open={open}
       onOpenChange={onOpenChange}
       title="Compartir"
-      description="El enlace contiene los mensajes (no la URL del webhook ni los archivos)."
+      description="Es el mismo enlace que tienes en la barra del navegador: se actualiza solo con cada cambio. Contiene los mensajes, pero no la URL del webhook ni los archivos."
       footer={
         <>
           <Button onClick={() => copy(data.json, 'JSON copiado')}>Copiar JSON</Button>

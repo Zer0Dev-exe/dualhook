@@ -149,7 +149,7 @@ export interface Target {
   info: WebhookInfo | null;
 }
 
-export type BackupKind = 'manual' | 'auto' | 'sent' | 'import';
+export type BackupKind = 'manual' | 'import';
 
 export interface Backup {
   id: string;
@@ -158,8 +158,5 @@ export interface Backup {
   createdAt: number;
   updatedAt: number;
   fp: string;
-  pinned?: boolean;
-  sentTo?: string;
-  messageId?: string;
   messages: Message[];
 }

@@ -10,7 +10,7 @@
 
 [![Demo](https://img.shields.io/badge/demo-zer0.is--a.dev%2Fdualhook-2dc770?style=flat-square&logo=githubpages&logoColor=white)](https://zer0.is-a.dev/dualhook/)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/Zer0Dev-exe/dualhook/deploy.yml?branch=main&style=flat-square&label=deploy)](https://github.com/Zer0Dev-exe/dualhook/actions/workflows/deploy.yml)
-[![Versión](https://img.shields.io/badge/versión-1.0.3-5865f2?style=flat-square)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-1.1.0-5865f2?style=flat-square)](CHANGELOG.md)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-yellow?style=flat-square)](LICENSE)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -91,9 +91,10 @@ admite Discord:
 
 ### 💾 Backups y datos
 
-- Backups **manuales, automáticos, de envío e importados**, filtrables por tipo y por modo (V1, V2 o mixto).
+- **El enlace se guarda solo**: la URL de la página se actualiza con cada cambio, así que si cierras la pestaña
+  sin guardar, ese enlace (o el historial del navegador) te devuelve tus mensajes. También sirve para compartirlos.
+- **Backups manuales**, solo cuando tú quieras, filtrables por modo (V1, V2 o mixto).
 - **Importar/exportar JSON**, incluidos backups de **Discohook** y payloads sueltos.
-- **Enlaces para compartir** los mensajes, sin incluir el token del webhook.
 
 ## Capturas
 
@@ -103,7 +104,7 @@ admite Discord:
     <td width="50%"><img src="docs/screenshots/editor-v1.png" alt="Editor en modo V1" /><p align="center"><b>Modo V1 · Clásico</b>: contenido y embeds, en azul</p></td>
   </tr>
   <tr>
-    <td><img src="docs/screenshots/backups.png" alt="Panel de backups" /><p align="center"><b>Backups</b> con filtros por tipo y por modo</p></td>
+    <td><img src="docs/screenshots/backups.png" alt="Panel de backups" /><p align="center"><b>Backups</b> manuales con filtro por modo</p></td>
     <td><img src="docs/screenshots/json.png" alt="Vista JSON" /><p align="center"><b>JSON</b>: el payload exacto, editable</p></td>
   </tr>
   <tr>
@@ -186,15 +187,20 @@ Al **editar** un mensaje, uno V1 se puede convertir a V2, pero uno V2 ya no pued
 
 ## Backups
 
-| Tipo | Cuándo se crea | Se conserva |
-|---|---|---|
-| **Manual** | Botón *Guardar backup ahora* o `Ctrl+S` | Siempre |
-| **Auto** | Cada 1/5/15/30 min si hubo cambios, y antes de restaurar, importar, convertir, aplicar plantillas o JSON, o borrar un mensaje | Los 25 más recientes |
-| **Enviado** | Cada vez que envías o editas un mensaje | Los 60 más recientes |
-| **Importado** | Al importar un JSON con backups | Siempre |
+Dualhook no hace copias por su cuenta: **los backups solo se crean cuando tú pulsas *Guardar backup
+ahora*** (o `Ctrl+S`). También aparecen como backups los que importes desde un archivo JSON. Cada
+backup se puede restaurar, añadir al espacio actual, sobrescribir, renombrar, duplicar o descargar.
 
-Puedes **fijar** (📌) un backup automático o de envío para que no se borre. Cada backup se puede
-restaurar, añadir al espacio actual, sobrescribir, renombrar o descargar.
+### El enlace guarda tu trabajo
+
+Mientras editas, la URL de la página se actualiza sola con el contenido de los mensajes
+(`…/dualhook/#data=…`, comprimido). Gracias a eso:
+
+- Si **cierras la pestaña o el navegador sin guardar**, abre Dualhook desde el historial y recuperas lo que tenías.
+- Para **compartir** los mensajes, basta con copiar la URL (o usar el botón *Compartir*).
+- Si abres un enlace con contenido distinto al que tienes en el editor, Dualhook te pregunta antes de sustituirlo.
+
+El enlace **nunca** incluye la URL ni el token del webhook, ni los archivos adjuntos.
 
 **Formatos que se pueden importar:**
 
@@ -216,8 +222,9 @@ restaurar, añadir al espacio actual, sobrescribir, renombrar o descargar.
 - **Sin servidor propio**: el navegador habla directamente con `discord.com`.
 - Todo se guarda en el `localStorage` de tu navegador. Si borras los datos del navegador, pierdes los
   backups que no hayas exportado.
-- La **URL del webhook es un secreto** (incluye el token). Se oculta por defecto, no se incluye en los
-  enlaces compartidos y solo se exporta si marcas esa opción expresamente.
+- La **URL del webhook es un secreto** (incluye el token). Se oculta por defecto, no se incluye en el
+  enlace de la página y solo se exporta si marcas esa opción expresamente.
+- El enlace de la página sí contiene el **texto de tus mensajes**: tenlo en cuenta antes de compartirlo.
 - Los **archivos adjuntos** solo viven en la sesión actual: no se guardan en backups.
 
 ## Stack y versiones

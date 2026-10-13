@@ -5,9 +5,7 @@ import type { Backup, BackupKind, Message } from '@/lib/types';
 import { clone, fmtDate, uid } from '@/lib/utils';
 import { useWorkspace } from './workspace';
 
-const MAX_PER_KIND: Partial<Record<BackupKind, number>> = { auto: 25, sent: 60 };
-
-/** Huella de contenido (sin ids) para no duplicar backups idénticos. */
+/** Huella de contenido (sin ids) para comparar espacios de trabajo. */
 export const fingerprint = (messages: Message[]) =>
   JSON.stringify(messages, (k, v) => (k === '_id' || k === 'id' || k === 'lastSent' ? undefined : v));
 
@@ -16,50 +14,24 @@ export const modesOf = (messages: Message[]) => {
   return { v1, v2: messages.length - v1 };
 };
 
+/** Los backups solo se crean a mano (o al importarlos de un archivo). */
 interface BackupsState {
   list: Backup[];
-  create: (kind: BackupKind, name?: string, messages?: Message[], extra?: Partial<Backup>) => Backup;
-  /** Crea un backup automático solo si el contenido actual no está ya guardado. */
-  autoIfChanged: (reason?: string) => Backup | null;
+  create: (name?: string, messages?: Message[], kind?: BackupKind) => Backup;
   remove: (id: string) => void;
   update: (id: string, patch: Partial<Backup>) => void;
-  addImported: (items: { name: string; messages: Message[]; kind?: string; createdAt?: number }[]) => void;
-}
-
-function prune(list: Backup[]) {
-  const counts: Partial<Record<BackupKind, number>> = {};
-  return list.filter((b) => {
-    const max = MAX_PER_KIND[b.kind];
-    if (!max || b.pinned) return true;
-    counts[b.kind] = (counts[b.kind] ?? 0) + 1;
-    return counts[b.kind]! <= max;
-  });
+  addImported: (items: { name: string; messages: Message[]; createdAt?: number }[]) => void;
 }
 
 export const useBackups = create<BackupsState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       list: [],
-      create: (kind, name, messages = useWorkspace.getState().messages, extra = {}) => {
+      create: (name, messages = useWorkspace.getState().messages, kind = 'manual') => {
         const msgs = clone(messages);
-        const b: Backup = {
-          id: uid(),
-          name: name || `Backup ${fmtDate(Date.now())}`,
-          kind,
-          createdAt: Date.now(),
-          updatedAt: Date.now(),
-          fp: fingerprint(msgs),
-          messages: msgs,
-          ...extra,
-        };
-        set((s) => ({ list: prune([b, ...s.list]) }));
+        const b: Backup = { id: uid(), name: name || `Backup ${fmtDate(Date.now())}`, kind, createdAt: Date.now(), updatedAt: Date.now(), fp: fingerprint(msgs), messages: msgs };
+        set((s) => ({ list: [b, ...s.list] }));
         return b;
-      },
-      autoIfChanged: (reason) => {
-        const msgs = useWorkspace.getState().messages;
-        const fp = fingerprint(msgs);
-        if (get().list.some((b) => b.fp === fp)) return null;
-        return get().create('auto', reason || `Auto · ${fmtDate(Date.now())}`);
       },
       remove: (id) => set((s) => ({ list: s.list.filter((b) => b.id !== id) })),
       update: (id, patch) =>
@@ -73,7 +45,7 @@ export const useBackups = create<BackupsState>()(
             ...items.map((b) => ({
               id: uid(),
               name: b.name || 'Importado',
-              kind: (b.kind as BackupKind) || 'import',
+              kind: 'import' as const,
               createdAt: b.createdAt || Date.now(),
               updatedAt: Date.now(),
               fp: fingerprint(b.messages),
@@ -84,7 +56,13 @@ export const useBackups = create<BackupsState>()(
     }),
     {
       name: 'dualhook.backups',
-      version: 1,
+      version: 2,
+      // v1 -> v2: se eliminan los backups automáticos y «de envío» (ahora solo hay backups manuales)
+      migrate: (persisted, version) => {
+        const p = persisted as { list?: (Backup & { kind: string })[] } | undefined;
+        if (version < 2 && p?.list) p.list = p.list.filter((b) => b.kind === 'manual' || b.kind === 'import');
+        return p as BackupsState;
+      },
       storage: {
         getItem: (k) => {
           const v = localStorage.getItem(k);
