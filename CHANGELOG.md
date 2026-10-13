@@ -3,6 +3,13 @@
 Todos los cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el versionado [SemVer](https://semver.org/lang/es/).
 
+## [1.0.2] — 2026-10-13
+
+### Corregido
+
+- Cambiar entre V1 y V2 ya no mueve la página: las tarjetas de modo tienen siempre la misma altura
+  (la etiqueta «borrador» reserva su sitio y el flag va en su propia línea) y no hay animaciones.
+
 ## [1.0.1] — 2026-10-13
 
 ### Cambiado
@@ -42,6 +49,7 @@ Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nomb
 
 - Prototipo inicial en HTML/CSS/JS sin framework, con el nombre provisional «Hookforge» (sustituido por la 1.0.0).
 
+[1.0.2]: #102--2026-10-13
 [1.0.1]: #101--2026-10-13
 [1.0.0]: #100--2026-10-13
 [0.1.0]: #010--2026-10-13

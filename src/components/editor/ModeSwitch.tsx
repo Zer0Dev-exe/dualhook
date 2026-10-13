@@ -28,18 +28,22 @@ function ModeCard({ m, mode }: { m: Message; mode: Mode }) {
   const on = m.mode === mode;
   const info = INFO[mode];
   const tone = TONE[mode];
+  const draft = !on && hasContent(m, mode);
+  // Estructura idéntica en ambos estados (activo/inactivo) para que al cambiar de modo no se mueva nada:
+  // sin transiciones, sin elementos que aparezcan o desaparezcan y sin líneas que puedan saltar.
   return (
     <button
       type="button"
+      aria-pressed={on}
       onClick={() => !on && update((d) => void (d.mode = mode))}
-      className={cn('rounded-xl border bg-panel p-3 text-left transition', on ? tone.on : 'border-line opacity-60 hover:border-line-2 hover:opacity-100')}
+      className={cn('flex flex-col rounded-xl border bg-panel p-3 text-left', on ? tone.on : 'border-line hover:border-line-2')}
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <span className={cn('size-2 rounded-full', tone.dot)} />
-        <b className={cn('text-[15px]', tone.text)}>{info.title}</b>
-        <code className="rounded bg-panel-3 px-1.5 font-mono text-[10.5px] text-muted">{info.flag}</code>
-        {!on && hasContent(m, mode) && <span className={cn('ml-auto rounded-full border px-2 text-[10.5px]', tone.pill)}>borrador</span>}
+      <div className="flex items-center gap-2">
+        <span className={cn('size-2 shrink-0 rounded-full', tone.dot)} />
+        <b className={cn('whitespace-nowrap text-[15px]', on ? 'text-fg' : 'text-muted')}>{info.title}</b>
+        <span className={cn('ml-auto whitespace-nowrap rounded-full border px-2 text-[10.5px]', tone.pill, !draft && 'invisible')}>borrador</span>
       </div>
+      <code className="mt-1 w-fit rounded bg-panel-3 px-1.5 font-mono text-[10.5px] text-muted">{info.flag}</code>
       <ul className={cn('mt-1.5 list-disc pl-5 text-[12.5px]', on ? 'text-fg' : 'text-muted')}>
         {info.points.map((p) => (
           <li key={p}>{p}</li>
