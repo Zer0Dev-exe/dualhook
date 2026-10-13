@@ -51,7 +51,15 @@ export const useWorkspace = create<WorkspaceState>()(
     })),
     {
       name: 'dualhook.workspace',
-      version: 1,
+      version: 2,
+      // v1 -> v2: el mensaje de bienvenida traía el nombre de la app fijado y tapaba el del webhook
+      migrate: (persisted, version) => {
+        const p = persisted as { messages?: Message[] } | undefined;
+        if (version < 2) p?.messages?.forEach((m) => {
+          if ((m.username === 'Dualhook' || m.username === 'Hookforge') && !m.avatar_url) m.username = '';
+        });
+        return p as WorkspaceState;
+      },
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({ messages: s.messages, active: s.active }),
       merge: (persisted, current) => {

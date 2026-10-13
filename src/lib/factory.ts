@@ -94,7 +94,6 @@ export function normalizeMessage(raw: Partial<Message> | null | undefined): Mess
 
 export function welcomeMessage(): Message {
   const m = make.message('v2');
-  m.username = 'Dualhook';
   m.v2.components = [
     make.container({
       components: [

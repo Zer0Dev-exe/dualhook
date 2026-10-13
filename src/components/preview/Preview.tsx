@@ -46,7 +46,7 @@ function DiscordMessage({ m, index, active }: { m: Message; index: number; activ
   const files = useMessageFiles(m.id);
   const target = useActiveTarget();
   const setActive = useWorkspace((s) => s.setActive);
-  const name = m.username || target.info?.name || 'Dualhook';
+  const name = m.username || target.info?.name || 'Webhook';
   const avatar = m.avatar_url || target.info?.avatarUrl || DEFAULT_AVATAR;
   const isV1 = m.mode === 'v1';
   return (

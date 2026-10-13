@@ -1,5 +1,5 @@
-import { CircleCheck, CircleX, Eye, EyeOff, Loader2, Plus, Trash2, Webhook } from 'lucide-react';
-import { useState } from 'react';
+import { CircleCheck, CircleX, Eye, EyeOff, Loader2, Plus, RefreshCw, Trash2, Webhook } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button, IconButton } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,25 +9,62 @@ import { cn } from '@/lib/utils';
 import { confirmDialog } from '@/store/dialogs';
 import { useActiveTarget, useTargets } from '@/store/targets';
 
+const firstLine = (e: unknown) => (e as Error).message.split(/\r?\n/)[0];
+
 /** Webhook de destino: guardados, URL, comprobación. */
 export function TargetCard() {
   const { list, select, add, remove, update } = useTargets();
   const t = useActiveTarget();
   const [show, setShow] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [error, setError] = useState('');
   const valid = !!parseWebhookUrl(t.url);
 
-  const check = async () => {
+  const fetchInfo = async (url: string) => {
+    const info = await discord.getWebhook(url);
+    update(t.id, (d) => {
+      d.info = info;
+      if (!d.name) d.name = info.name;
+    });
+    setError('');
+    return info;
+  };
+
+  // Al pegar una URL válida se consulta el webhook automáticamente (nombre, avatar, canal)
+  useEffect(() => {
+    setError('');
+    if (!valid || t.info) return;
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      setChecking(true);
+      try {
+        const info = await discord.getWebhook(t.url);
+        if (cancelled) return;
+        update(t.id, (d) => {
+          d.info = info;
+          if (!d.name) d.name = info.name;
+        });
+      } catch (e) {
+        if (!cancelled) setError(firstLine(e));
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    }, 500);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      setChecking(false);
+    };
+  }, [t.id, t.url, t.info, valid, update]);
+
+  // Volver a consultar (por si el webhook se renombró o cambió de avatar en Discord)
+  const refresh = async () => {
     setChecking(true);
     try {
-      const info = await discord.getWebhook(t.url);
-      update(t.id, (d) => {
-        d.info = info;
-        if (!d.name) d.name = info.name;
-      });
-      toast.success(`Webhook OK: ${info.name}`);
+      const info = await fetchInfo(t.url);
+      toast.success(`Webhook actualizado: ${info.name}`);
     } catch (e) {
-      toast.error((e as Error).message);
+      setError(firstLine(e));
     } finally {
       setChecking(false);
     }
@@ -82,13 +119,23 @@ export function TargetCard() {
             <IconButton title={show ? 'Ocultar' : 'Mostrar'} onClick={() => setShow(!show)}>
               {show ? <EyeOff /> : <Eye />}
             </IconButton>
-            <Button size="sm" disabled={!valid || checking} onClick={check}>
-              {checking && <Loader2 className="animate-spin" />}
-              Comprobar
+            <Button size="sm" disabled={!valid || checking} onClick={refresh} title="Volver a leer nombre y avatar del webhook">
+              {checking ? <Loader2 className="animate-spin" /> : <RefreshCw />}
+              Actualizar
             </Button>
           </>
         }
       />
+      {error && (
+        <p className="-mt-1 flex items-center gap-1.5 text-xs text-red-300">
+          <CircleX className="size-3.5 shrink-0" /> {error}
+        </p>
+      )}
+      {checking && !t.info && (
+        <p className="-mt-1 flex items-center gap-1.5 text-xs text-muted">
+          <Loader2 className="size-3.5 animate-spin" /> Leyendo el webhook…
+        </p>
+      )}
       <TextField label="Nombre (solo para ti)" placeholder="p. ej. #anuncios de Mi Server" value={t.name} onChange={(v) => update(t.id, (d) => void (d.name = v))} />
 
       {t.info && (

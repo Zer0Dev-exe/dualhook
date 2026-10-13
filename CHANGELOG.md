@@ -3,6 +3,21 @@
 Todos los cambios relevantes del proyecto. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/)
 y el versionado [SemVer](https://semver.org/lang/es/).
 
+## [1.0.3] — 2026-10-13
+
+### Cambiado
+
+- Al pegar la URL de un webhook se leen automáticamente su nombre y avatar (ya no hace falta pulsar
+  «Comprobar»), y la vista previa los usa cuando el mensaje no tiene nombre propio. El botón pasa a
+  llamarse «Actualizar» para volver a leerlos.
+- Si la URL no corresponde a ningún webhook, se muestra el error bajo el campo.
+- El campo «Nombre» del perfil indica qué nombre se usará por defecto.
+
+### Corregido
+
+- El mensaje de bienvenida traía el nombre «Dualhook» fijado y tapaba el nombre del webhook. Se ha
+  quitado y se limpia automáticamente en los datos ya guardados.
+
 ## [1.0.2] — 2026-10-13
 
 ### Corregido
@@ -49,6 +64,7 @@ Primera versión estable, reescrita sobre Vite + React + TypeScript, con el nomb
 
 - Prototipo inicial en HTML/CSS/JS sin framework, con el nombre provisional «Hookforge» (sustituido por la 1.0.0).
 
+[1.0.3]: #103--2026-10-13
 [1.0.2]: #102--2026-10-13
 [1.0.1]: #101--2026-10-13
 [1.0.0]: #100--2026-10-13

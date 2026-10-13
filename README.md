@@ -10,7 +10,7 @@
 
 [![Demo](https://img.shields.io/badge/demo-zer0.is--a.dev%2Fdualhook-2dc770?style=flat-square&logo=githubpages&logoColor=white)](https://zer0.is-a.dev/dualhook/)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/Zer0Dev-exe/dualhook/deploy.yml?branch=main&style=flat-square&label=deploy)](https://github.com/Zer0Dev-exe/dualhook/actions/workflows/deploy.yml)
-[![Versión](https://img.shields.io/badge/versión-1.0.2-5865f2?style=flat-square)](CHANGELOG.md)
+[![Versión](https://img.shields.io/badge/versión-1.0.3-5865f2?style=flat-square)](CHANGELOG.md)
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-yellow?style=flat-square)](LICENSE)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -150,7 +150,7 @@ Puedes abrirlo con doble clic o subirlo a cualquier hosting estático (GitHub Pa
 ## Guía de uso
 
 1. **Configura el webhook.** En Discord, ve a *Ajustes del canal → Integraciones → Webhooks → Copiar URL*.
-   Pégala en **Webhook destino** y pulsa **Comprobar**.
+   Pégala en **Webhook destino**: su nombre y avatar se cargan solos y se usan en la vista previa.
 2. **Elige el modo.** Pulsa la tarjeta **V1 · Clásico** o **V2 · Components**. El color de la interfaz
    cambia para que siempre sepas en qué modo estás.
 3. **Construye el mensaje** con el editor (o una plantilla) y revisa la vista previa de la derecha.

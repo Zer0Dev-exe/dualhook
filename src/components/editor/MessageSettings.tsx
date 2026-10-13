@@ -9,6 +9,7 @@ import { LIMITS, make } from '@/lib/factory';
 import type { Message } from '@/lib/types';
 import { fmtDate, fmtSize, pickFiles } from '@/lib/utils';
 import { deleteFromDiscord, loadFromDiscord } from '@/store/actions';
+import { useActiveTarget } from '@/store/targets';
 import { useFiles, useMessageFiles } from '@/store/ui';
 import { useWorkspace } from '@/store/workspace';
 
@@ -16,11 +17,12 @@ const useUpdate = () => useWorkspace((s) => s.updateActive);
 
 export function ProfileCard({ message: m }: { message: Message }) {
   const update = useUpdate();
+  const info = useActiveTarget().info;
   return (
     <Card id={`profile-${m.id}`} icon={<User />} title="Perfil" summary={m.username}>
       <div className="grid gap-2.5 sm:grid-cols-2">
-        <TextField label="Nombre" max={LIMITS.common.username} placeholder="Por defecto: el del webhook" value={m.username} onChange={(v) => update((d) => void (d.username = v))} />
-        <TextField label="URL del avatar" placeholder="https://…png" value={m.avatar_url} onChange={(v) => update((d) => void (d.avatar_url = v))} />
+        <TextField label="Nombre" max={LIMITS.common.username} placeholder={info ? `Por defecto: ${info.name}` : 'Por defecto: el del webhook'} value={m.username} onChange={(v) => update((d) => void (d.username = v))} />
+        <TextField label="URL del avatar" placeholder={info ? 'Por defecto: el del webhook' : 'https://…png'} value={m.avatar_url} onChange={(v) => update((d) => void (d.avatar_url = v))} />
       </div>
     </Card>
   );
