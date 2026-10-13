@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Color del modo activo (RGB para poder usar opacidades: bg-mode/10) */
+:root {
+  --mode: 45 199 112;
+  color-scheme: dark;
+}
+:root[data-mode='v1'] {
+  --mode: 88 101 242;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+  body {
+    @apply bg-bg font-sans text-sm text-fg antialiased;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #333944 transparent;
+  }
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-line-2 bg-panel px-2.5 py-1.5 text-sm text-fg outline-none transition placeholder:text-muted/70 focus:border-mode focus:ring-2 focus:ring-mode/20;
+  }
+  .autosize {
+    field-sizing: content;
+  }
+  .label {
+    @apply text-[11px] font-bold uppercase tracking-wide text-muted;
+  }
+  /* Tarjetas anidadas: cada nivel un poco más claro */
+  .card {
+    @apply rounded-xl border border-line bg-panel;
+  }
+  .card .card {
+    @apply bg-panel-2;
+  }
+  .card .card .card {
+    @apply bg-panel-3;
+  }
+}
+
+/* ---------- Markdown de Discord (vista previa) ---------- */
+.md {
+  @apply min-w-0 break-words;
+}
+.md-h {
+  @apply mb-1 mt-2 font-bold leading-snug text-[#f2f3f5];
+}
+.md > .md-h:first-child {
+  @apply mt-0;
+}
+h1.md-h {
+  @apply text-2xl;
+}
+h2.md-h {
+  @apply text-xl;
+}
+h3.md-h {
+  @apply text-base;
+}
+.md-sub {
+  @apply text-[13px] text-dc-muted;
+}
+.md-link {
+  @apply text-dc-link hover:underline;
+}
+.md-code {
+  @apply rounded border border-dc-dark bg-dc-embed px-1 font-mono text-[85%];
+}
+.md-pre {
+  @apply my-1 overflow-x-auto whitespace-pre-wrap rounded border border-dc-dark bg-dc-embed px-2.5 py-2 font-mono text-[13px];
+}
+.md blockquote {
+  @apply my-0.5 border-l-4 border-dc-grey pl-3;
+}
+.md-ul,
+.md-ol {
+  @apply my-0.5 pl-6;
+}
+.md-ul {
+  @apply list-disc;
+}
+.md-ol {
+  @apply list-decimal;
+}
+.md strong {
+  @apply text-[#f2f3f5];
+}
+.mention {
+  @apply rounded-[3px] bg-dc-blurple/30 px-0.5 font-medium text-[#c9cdfb];
+}
+.md-time {
+  @apply rounded-[3px] bg-white/5 px-0.5;
+}
+.md-spoiler {
+  @apply cursor-pointer rounded-[3px] bg-dc-dark text-transparent;
+}
+.md-spoiler * {
+  visibility: hidden;
+}
+.md-spoiler.shown {
+  @apply bg-white/10 text-inherit;
+}
+.md-spoiler.shown * {
+  visibility: visible;
+}
+img.emoji {
+  @apply inline-block h-[22px] w-[22px] object-contain align-bottom;
+}

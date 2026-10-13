@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f232b"/>
+      <stop offset="1" stop-color="#121418"/>
+    </linearGradient>
+  </defs>
+  <rect width="96" height="96" rx="24" fill="url(#bg)"/>
+  <rect x="1" y="1" width="94" height="94" rx="23" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="2"/>
+  <g fill="none" stroke-width="8" stroke-linecap="round" transform="translate(48 48) scale(1.12) translate(-48 -48)">
+    <!-- V1: gancho azul que baja -->
+    <circle cx="35" cy="19" r="5" stroke="#5865f2" stroke-width="6"/>
+    <path d="M35 24 V54 a11 11 0 0 0 22 0 V46" stroke="#5865f2"/>
+    <!-- V2: gancho verde que sube, enganchado al azul -->
+    <path d="M61 72 V42 a11 11 0 0 0 -22 0 V50" stroke="#2dc770"/>
+    <circle cx="61" cy="77" r="5" stroke="#2dc770" stroke-width="6"/>
+    <!-- el azul pasa por delante en el cruce de la derecha para que se vean entrelazados -->
+    <path d="M57 52 V46" stroke="#5865f2"/>
+  </g>
+</svg>
